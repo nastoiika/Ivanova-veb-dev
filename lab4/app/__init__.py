@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, session
-from database import db
+from .database import db
 
 db = db
 
