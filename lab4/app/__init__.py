@@ -1,9 +1,9 @@
 import os
 
 from flask import Flask, session
-from database import DBConnector
+from database import db
 
-db = DBConnector()
+db = db
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=False)
