@@ -43,7 +43,7 @@ def test_create_user(client):
     # Авторизация пользователя для теста
     client.post('/auth/login', data={
         'username': 'admin', 
-        'password': 'Qwerty123'
+        'password': 'Qwerty123!1'
     }, follow_redirects=True)
 
     # Проверка, что страница создания пользователя доступна после входа
@@ -94,7 +94,7 @@ def test_edit_user(client):
     
     # Проверяем, что в форме есть нужные поля и заполнены текущими значениями
     assert 'name="first_name"' in html and 'value="Петр"' in html
-    assert 'name="middle_name"' in html and 'value="Петрович"' in html
+    assert 'name="middle_name"' in html and 'value="Петровичx"' in html
     assert 'name="last_name"' in html and 'value="Сидоров"' in html
 
     # Проверяем, что полей логина и пароля нет
@@ -136,7 +136,7 @@ def test_delete_user(client, app, db_connector):
     # 2. Авторизация пользователя для теста
     client.post('/auth/login', data={
         'username': 'admin', 
-        'password': 'Qwerty123'
+        'password': 'Qwerty123!1'
     }, follow_redirects=True)
 
     # 3. Создаем нового пользователя для удаления
@@ -146,7 +146,7 @@ def test_delete_user(client, app, db_connector):
         'first_name': 'Иван',
         'middle_name': 'Иванович',
         'last_name': 'Иванов',
-        'role_id': '1'  # Убедитесь, что роль с ID=1 существует
+        'role_id': '1' 
     }, follow_redirects=True)
     
     # Проверяем, что пользователь создан (HTTP-код и отображение в интерфейсе)
@@ -157,8 +157,6 @@ def test_delete_user(client, app, db_connector):
     from app.repositories.user_repository import UserRepository
     user_repo = UserRepository(db_connector)
     all_users = user_repo.all()
-    
-    print("Все пользователи в БД:", all_users)  # Отладочный вывод
     
     user_to_delete = next((u for u in all_users if u['username'] == 'newuser1'), None)
     assert user_to_delete is not None, f"Пользователь не найден в БД. Все пользователи: {all_users}"
@@ -176,15 +174,15 @@ def test_change_password(client, app, db_connector):
 
     client.post('/auth/login', data={
         'username': 'admin', 
-        'password': 'Qwerty123'
+        'password': 'Qwerty123!1'
     }, follow_redirects=True)
     
-    response = client.get(f'/users/2/change')
+    response = client.get(f'/users/139/change')
     assert response.status_code == 200
     assert 'Введите старый пароль' in response.data.decode('utf-8')
 
-    response = client.post(f'/users/2/change', data={
-        'old_password': 'Qwerty123',
+    response = client.post(f'/users/139/change', data={
+        'old_password': 'Qwerty123!1',
         'new_password': 'Qwerty123!',
         'copy_password': 'Qwerty123!'
     }, follow_redirects=True)

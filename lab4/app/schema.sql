@@ -20,7 +20,8 @@ CREATE TABLE users (
 ) ENGINE INNODB;
 
 INSERT INTO roles (id, name)
-VALUES (1, 'admin');
+VALUES (1, 'admin'),
+       (2, 'user');
 
 INSERT INTO users (username, first_name, last_name, password_hash, role_id)
 VALUES ('admin', 'Иванова', 'Анастасия', SHA2('S0.0S', 256), 1);
