@@ -3,7 +3,7 @@ from flask import Blueprint, request,  render_template, abort, request, make_res
 from faker import Faker
 from flask_login import LoginManager, UserMixin, login_user, current_user, logout_user, login_required
 from .repositories.user_repository import UserRepository
-from database import db
+from .database import db
 
 user_repository = UserRepository(db)
 
