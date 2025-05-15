@@ -6,7 +6,7 @@ import mysql.connector as connector
 from .repositories.user_repository import UserRepository
 from .repositories.role_repository import RoleRepository
 from .check_pass_and_login import check_password, check_login
-from database import db
+from .database import db
 
 login_manager = LoginManager()
 login_manager.login_view = 'users.index'
