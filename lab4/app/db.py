@@ -15,7 +15,6 @@ class DBConnector:
             'user': self.app.config["MYSQL_USER"],
             'password': self.app.config["MYSQL_PASSWORD"],
             'host': self.app.config["MYSQL_HOST"],
-            'port': self.app.config["MYSQL_PORT"],
             'database': self.app.config["MYSQL_DATABASE"],
         }
     
