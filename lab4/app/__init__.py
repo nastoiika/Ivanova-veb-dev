@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, session
-from .db import DBConnector
+from database import DBConnector
 
 db = DBConnector()
 
