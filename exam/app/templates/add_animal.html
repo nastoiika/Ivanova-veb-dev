@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% from "form.html" import animal_form %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Добавить животное</h2>
+    {{ animal_form('add_animal') }}
+</div>
+{% endblock %} 

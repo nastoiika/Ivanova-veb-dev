@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <form method="post" action="{{ url_for('auth.login') }}" class="w-100" style="max-width: 400px;">
+        <h2 class="text-center mb-4">Авторизация</h2>
+
+        <div class="mb-3">
+            <label for="login" class="form-label">Логин</label>
+            <input type="text" class="form-control" id="login" name="username" placeholder="Введите логин" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="userpass" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="userpass" name="password" placeholder="Введите пароль" required>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="remember" name="remember">
+            <label class="form-check-label" for="remember">
+                Запомнить меня
+            </label>
+        </div>
+
+        <div class="d-grid gap-2 mb-2">
+            <button type="submit" class="btn btn-primary">Войти</button>
+            <a href="auth.login" class="btn btn-outline-secondary">Зарегистрироваться</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% macro animal_form(action, animal=None, errors={}) %}
+<form method="post" {% if action == 'add_animal' %}enctype="multipart/form-data"{% endif %}>
+    <div class="mb-3">
+        <label for="name" class="form-label">Имя животного</label>
+        <input type="text" name="name" id="name" class="form-control" 
+               value="{{ animal.name }}">
+        {% if errors.name %}
+            <div class="text-danger small">{{ errors.name }}</div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Описание</label>
+        <textarea name="description" id="description" class="form-control" rows="3">{{ animal.description }}</textarea>
+        {% if errors.description %}
+            <div class="text-danger small">{{ errors.description }}</div>
+        {% endif %}
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="age" class="form-label">Возраст (месяцев)</label>
+            <input type="number" name="age" id="age" class="form-control" 
+                   value="{{ animal.age }}" min="0">
+            {% if errors.age %}
+                <div class="text-danger small">{{ errors.age }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <label for="breed" class="form-label">Порода</label>
+            <input type="text" name="breed" id="breed" class="form-control" 
+                   value="{{ animal.breed }}">
+            {% if errors.breed %}
+                <div class="text-danger small">{{ errors.breed }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <label for="gender" class="form-label">Пол</label>
+            <select name="gender" id="gender" class="form-select">
+                <option value="male" {% if animal and animal.gender == 'male' %}selected{% endif %}>Мальчик</option>
+                <option value="female" {% if animal and animal.gender == 'female' %}selected{% endif %}>Девочка</option>
+            </select>
+            {% if errors.gender %}
+                <div class="text-danger small">{{ errors.gender }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Статус</label>
+        <select name="status" id="status" class="form-select">
+            <option value="available" {% if animal and animal.status == 'available' %}selected{% endif %}>Доступен</option>
+            <option value="reserved" {% if animal and animal.status == 'reserved' %}selected{% endif %}>Зарезервирован</option>
+            <option value="adopted" {% if animal and animal.status == 'adopted' %}selected{% endif %}>Пристроен</option>
+        </select>
+        {% if errors.status %}
+            <div class="text-danger small">{{ errors.status }}</div>
+        {% endif %}
+    </div>
+
+    {% if action == 'add_animal' %}
+    <div class="mb-3">
+        <label for="photos" class="form-label">Фотографии</label>
+        <input type="file" name="photos" id="photos" class="form-control" multiple accept="image/*">
+        <div class="form-text">Можно выбрать несколько файлов</div>
+        {% if errors.photos %}
+            <div class="text-danger small">{{ errors.photos }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">
+            {% if action == 'add_animal' %}Добавить{% else %}Сохранить{% endif %}
+        </button>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+</form>
+{% endmacro %}

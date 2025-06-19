@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ animal.name }}</h2>
+    <div id="animal-gallery" class="mb-4">
+        {% for photo in animal.photos %}
+            <img src="{{ url_for('static', filename='uploads/' + photo.name) }}" alt="Фото животного" class="img-thumbnail me-2" width="200">
+        {% endfor %}
+    </div>
+
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><strong>Возраст:</strong> {{ animal.age }} мес.</li>
+        <li class="list-group-item"><strong>Порода:</strong> {{ animal.breed }}</li>
+        <li class="list-group-item"><strong>Пол:</strong> {% if animal.gender == 'male' %}Мальчик{% else %}Девочка{% endif %}</li>
+        <li class="list-group-item"><strong>Статус:</strong> 
+            {% if animal.status == 'available' %}Доступен для усыновления{% 
+            elif animal.status == 'adoption' %}В процессе усыновления{% 
+            else %}Усыновлён{% endif %}
+        </li>
+        <li class="list-group-item"><strong>Описание:</strong><br> {{ animal.description }}</li>
+    </ul>
+
+    {% if current_user.is_authenticated and current_user.role.name in ['administrator', 'moderator'] %}
+    <h4>Заявки на усыновление</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Пользователь</th>
+                <th>Контакты</th>
+                <th>Дата подачи</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in adoptions %}
+            <tr>
+                <td>{{ app.user.last_name }} {{ app.user.first_name }}</td>
+                <td>{{ app.contact_details }}</td>
+                <td>{{ app.date.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>{{ app.status }}</td>
+                <td>
+                    {% if app.status == 'pending' %}
+                    <form method="post" action="{{ url_for('admin.accept_adoption', adoption_id=app.id) }}" style="display:inline">
+                        <button class="btn btn-success btn-sm">Принять</button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.reject_adoption', adoption_id=app.id) }}" style="display:inline">
+                        <button class="btn btn-danger btn-sm">Отклонить</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if current_user.is_authenticated and current_user.role.name == "user" %}
+        {% if user_adoption %}
+            <div class="alert alert-info">
+                <strong>Вы уже подали заявку:</strong><br>
+                <strong>Дата:</strong> {{ user_adoption.date.strftime('%d.%m.%Y %H:%M') }}<br>
+                <strong>Контакты:</strong> {{ user_adoption.contact_details }}<br>
+                <strong>Статус:</strong> {{ status_labels[user_adoption.status] }}
+            </div>
+        {% else %}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adoptionModal">
+                Подать заявку на усыновление
+            </button>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div class="modal fade" id="adoptionModal" tabindex="-1" aria-labelledby="adoptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{{ url_for('users.submit_adoption', animal_id=animal.id) }}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adoptionModalLabel">Заявка на усыновление</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="contact_details" class="form-label">Контактные данные</label>
+            <input type="text" name="contact_details" id="contact_details" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-primary">Отправить заявку</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

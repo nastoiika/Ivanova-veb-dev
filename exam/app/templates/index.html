@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Приют для животных{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Наши питомцы</h1>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for animal in animals %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if animal.photos %}
+                <img src="{{ url_for('static', filename='uploads/' + animal.photos[0].name) }}" 
+                     class="card-img-top" 
+                     alt="{{ animal.name }}"
+                     style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 200px;">
+                    <span class="text-muted">Нет фото</span>
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ animal.name }}</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Порода:</strong> {{ animal.breed }}</li>
+                        <li><strong>Возраст:</strong> {{ animal.age }} месяцев</li>
+                        <li><strong>Пол:</strong> {{ animal.gender }}</li>
+                        <li>
+                            <strong>Статус:</strong> 
+                            <span class="badge 
+                                {% if animal.status == 'Available' %}bg-success
+                                {% elif animal.status == 'Reserved' %}bg-warning
+                                {% else %}bg-secondary{% endif %}">
+                                {{ status_labels[animal.status] }}
+                            </span>
+                        </li>
+                        <li><strong>Заявок:</strong> {{ animal.adoptions|length }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between">
+                    <a href="{{ url_for('users.view_animal', animal_id=animal.id) }}" 
+                       class="btn btn-sm btn-outline-primary">
+                        Просмотр
+                    </a>
+                    
+                    {% if current_user.is_authenticated and (current_user.role.name in ['administrator', 'moderator']) %}
+                    <a href="{{ url_for('admin.edit_animal', animal_id=animal.id) }}" 
+                       class="btn btn-sm btn-outline-secondary">
+                        Редактировать
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_user.is_authenticated and current_user.role.name == "administrator" %}
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ animal.id }}">
+                        Удалить
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal{{ animal.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ animal.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <form action="{{ url_for('admin.delete_animal', animal_id=animal.id) }}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ animal.id }}">Удаление животного</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить животное <strong>{{ animal.name }}</strong>? Это действие нельзя отменить.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                        <button type="submit" class="btn btn-danger">Да</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">Нет животных для отображения</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if pagination.pages > 1 %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('users.index', page=pagination.prev_num) }}">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('users.index', page=page_num) }}">
+                            {{ page_num }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('users.index', page=pagination.next_num) }}">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% if current_user.is_authenticated and current_user.role.name == "administrator" %}
+    <div class="mb-4">
+        <a href="{{ url_for('admin.add_animal') }}" class="btn btn-primary">
+            Добавить животное
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
